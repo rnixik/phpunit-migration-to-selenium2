@@ -16,8 +16,8 @@
  */
 
 /**
- * Implements adapter between PHPUnit_Extensions_SeleniumTestCase
- * and PHPUnit_Extensions_Selenium2TestCase.
+ * Implements adapter for migration from PHPUnit_Extensions_SeleniumTestCase
+ * to PHPUnit_Extensions_Selenium2TestCase.
  * 
  * If user's TestCase class is implemented with old format (with commands 
  * like open, type, waitForPageToLoad), it should extend MigrationToSelenium2
