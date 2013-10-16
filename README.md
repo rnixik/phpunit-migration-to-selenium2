@@ -20,6 +20,8 @@ Class provides bindings for methods:
 * click
 * select
 * isTextPresent
+* isElementPresent
+* getText
 
 ### License
     Copyright 2013 Roman Nix

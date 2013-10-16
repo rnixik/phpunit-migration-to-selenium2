@@ -35,13 +35,11 @@ class MigrationToSelenium2 extends PHPUnit_Extensions_Selenium2TestCase{
     }
     
     protected function byQuery($selector){
-        if (preg_match('/xpath=(.+)/', $selector, $match)){
-            return $this->byXPath($match[1]);
-        } else if (preg_match('/css=(.+)/', $selector, $match)){
-            return $this->byCssSelector($match[1]);
-        } else if (preg_match('/\/\/(.+)/', $selector)){
+        if (preg_match('/^\/\/(.+)/', $selector)){
+            /* "//a[contains(@href, '?logout')]" */
             return $this->byXPath($selector);
-        } else if (preg_match('/(.+)=(.+)/', $selector, $match)){
+        } else if (preg_match('/^([a-z]+)=(.+)/', $selector, $match)){
+            /* "id=login_name" */
             switch ($match[1]){
                 case 'id':
                     return $this->byId($match[2]);
@@ -49,16 +47,24 @@ class MigrationToSelenium2 extends PHPUnit_Extensions_Selenium2TestCase{
                 case 'name':
                     return $this->byName($match[2]);
                     break;
-                default:
-                    return $this->byCssSelector("[{$match[1]}='$match[2]']");
+                case 'link':
+                    return $this->byPartialLinkText($match[2]);
+                    break;
+                case 'xpath':
+                    return $this->byXPath($match[2]);
+                    break;
+                case 'css':
+                    $cssSelector = str_replace('..', '.', $match[2]);
+                    return $this->byCssSelector($cssSelector);
+                    break;
+                    
             }
         }
-        
         throw new Exception("Unknown selector '$selector'");
     }
     
     protected function waitForPageToLoad($timeout){
-        
+        $this->timeouts()->implicitWait($timeout);
     }
     
     public function click($selector){
@@ -81,7 +87,23 @@ class MigrationToSelenium2 extends PHPUnit_Extensions_Selenium2TestCase{
     public function isTextPresent($text){
         if (strpos($this->byCssSelector('body')->text(), $text) !== false){
             return true;
+        } else {
+            return false;
         }
+    }
+    
+    public function isElementPresent($selector){
+        $element = $this->byQuery($selector);
+        if ($element->name()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public function getText($selector){
+        $element = $this->byQuery($selector);
+        return $element->text();
     }
 }
 
